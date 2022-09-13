@@ -1,0 +1,31 @@
+version: "3.7"
+
+services: 
+  php-nginx:
+    image: nginx
+    ports:
+      - "8020:80"
+    # зависит от php. Значит, что будет запущен только после запуска сервиса php
+    depends_on:
+      - php-app
+    # ".:/app" - you copy all content from your directory (.) to container's
+    # directory (/app)
+    # "./php.conf:/etc/nginx/conf.d/default_ver1.conf" will do the same things
+    # only with file
+    volumes:
+      - "$PWD/nginx/default_ver1.conf:/etc/nginx/conf.d/default_ver1.conf"
+#      - "$PWD/public:/var/www/public"
+    networks:
+      default:
+    container_name: "php-nginx"
+
+  php-app:
+    build:
+      context: ./php
+    image: php:8.1.2-fpm
+    volumes:
+      - "$PWD/public:/var/www/public"
+    working_dir: /var/www/public
+    networks:
+      default:
+    container_name: "php-application"
